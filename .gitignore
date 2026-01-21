@@ -1,0 +1,26 @@
+# OS / editor
+*.swp
+*.bak
+.DS_Store
+
+# Logs
+logs/
+*.log
+
+# Scan outputs
+scans/
+reports/
+*.json
+*.xml
+
+# Credentials / keys
+*.key
+*.pem
+.env
+
+# Wazuh / agents
+wazuh/
+agent-data/
+
+# Temporary
+tmp/
