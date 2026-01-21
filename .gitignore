@@ -3,23 +3,26 @@
 *.bak
 .DS_Store
 
-# Logs
-logs/
+# Logs (runtime only)
+logs/*
+!logs/README.md
 *.log
 
-# Scan outputs
-scans/
-reports/
-*.json
-*.xml
+# Scan outputs (generated only)
+scans/*
+reports/*
+!scans/README.md
+!reports/README.md
 
 # Credentials / keys
 *.key
 *.pem
 .env
+!.env.example
 
-# Wazuh / agents
-wazuh/
+# Wazuh runtime data
+wazuh/data/
+wazuh/logs/
 agent-data/
 
 # Temporary

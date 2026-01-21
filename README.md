@@ -8,8 +8,7 @@ Team Senior Project focusing on:
 - Secure System Hardening 
 
 ## Structure
-- ASMProject_Files
--- 
+- asm_project
 
 ## Contributors
 - Adam Llado
