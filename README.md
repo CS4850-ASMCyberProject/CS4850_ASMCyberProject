@@ -12,6 +12,4 @@ Team Senior Project focusing on:
 
 ## Contributors
 - Adam Llado
-- Kimani Gordon
-- Austin Ablen
-- Alec
+
