@@ -1,7 +1,7 @@
 import mysql.connector
 from datetime import datetime
-
-#DB_Handler Creates a connection to the MySQL database and updates the database
+import json
+from terminal_run import run_cmd
 
 # --- VM CONNECTION CONFIG ---
 DB_HOST = "127.0.0.1"
@@ -302,42 +302,177 @@ def upsert_url_paths(subdomain, url_path, status, size, words, line_count, durat
     cursor.close()
     conn.close()
     
-def delsert_juice_shop_paths(subdomain, confirmed_paths):
+def delsert_juice_shop_paths(subdomain, url_path, sql_candidate, xss_candidate, dos_candidate, tested, vulnerable, vulnerable_to):
     conn = get_connection()
-    if not conn:
+    if not conn: 
         return
-    
     cursor = conn.cursor()
-    
+
+    # 1. Relational ID Lookup
     cursor.execute("SELECT id FROM assets WHERE subdomain = %s", (subdomain,))
     asset = cursor.fetchone()
     if not asset:
+        print(f"[!] Asset not found: {subdomain}")
         cursor.close()
         conn.close()
         return
-    
     asset_id = asset[0]
     
-    cursor.execute("SELECT url_path FROM juice_shop_paths WHERE asset_id = %s", (asset_id,))
-    database_paths = {row[0] for row in cursor.fetchall()}
+    vulnerable_to = json.dumps(vulnerable_to or [])
     
-    confirmed_paths = set(confirmed_paths)
-    
-    new_paths = confirmed_paths - database_paths
-    removed_paths = database_paths - confirmed_paths
-    
-    for path in new_paths:
-        print(f"[*] New Juice Shop Path: {path}")
+    cursor.execute("SELECT asset_id, url_path, sql_candidate, xss_candidate, dos_candidate, tested, vulnerable, vulnerable_to FROM juice_shop_paths WHERE asset_id = %s and url_path = %s", (asset_id, url_path,))
+    result = cursor.fetchone()
+    if not result:
+        print(f"[*] New Juice_Shop_Path: {url_path}")
         cursor.execute(
-            "INSERT INTO juice_shop_paths (asset_id, url_path) VALUES (%s, %s)", 
-            (asset_id, path)
+            "INSERT INTO juice_shop_paths (asset_id, url_path, sql_candidate, xss_candidate, dos_candidate, tested, vulnerable, vulnerable_to) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", 
+            (asset_id, url_path, sql_candidate, xss_candidate, dos_candidate, tested, vulnerable, vulnerable_to)
         )
-    
-    # 2. TRACK Juice Shop URL Path DRIFT
-    for path in removed_paths:
-        print(f"[!] Removing Juice Shop Path: {path}")
-        cursor.execute("DELETE FROM juice_shop_paths WHERE asset_id = %s and url_path = %s", (asset_id, path))
+        cursor.execute(
+            "INSERT INTO juice_shop_paths_scan_history (asset_id, url_path, change_type, new_value) VALUES (%s, %s, 'INITIAL_DISCOVERY', %s)", 
+            (asset_id, url_path, url_path)
+        )
+    else:
+        asset_id, old_url_path, old_sql_candidate, old_xss_candidate, old_dos_candidate, old_tested, old_vulnerable, old_vulnerable_to = result
         
+    # 2. TRACK URL Path DRIFT
+        if url_path != old_url_path:
+            print(f"[!] URL Path Change: {subdomain} ({old_url_path} -> {url_path})")
+            cursor.execute("UPDATE juice_shop_paths SET url_path = %s WHERE asset_id = %s and url_path = %s", (url_path, asset_id, old_url_path))
+            cursor.execute(
+                "INSERT INTO juice_shop_paths_scan_history (asset_id, url_path, change_type, old_value, new_value) VALUES (%s, %s, 'URL_PATH_CHANGE', %s, %s)",
+                (asset_id, url_path, old_url_path, url_path)
+            )
+            
+    # 3. TRACK SQL_CANDIDATE DRIFT
+        if sql_candidate != old_sql_candidate:
+            print(f"[!] SQL Candidate Change: {subdomain} ({old_sql_candidate} -> {sql_candidate})")
+            cursor.execute("UPDATE juice_shop_paths SET sql_candidate = %s WHERE asset_id = %s and url_path = %s", (sql_candidate, asset_id, url_path))
+            cursor.execute(
+                "INSERT INTO juice_shop_paths_scan_history (asset_id, url_path, change_type, old_value, new_value) VALUES (%s, %s, 'SQL_CANDIDATE_CHANGE', %s, %s)",
+                (asset_id, url_path, old_sql_candidate, sql_candidate)
+            )
+            
+    # 4. TRACK XSS_CANDIDATE DRIFT
+        if xss_candidate != old_xss_candidate:
+            print(f"[!] XSS Candidate Change: {subdomain} ({old_xss_candidate} -> {xss_candidate})")
+            cursor.execute("UPDATE juice_shop_paths SET xss_candidate = %s WHERE asset_id = %s and url_path = %s", (xss_candidate, asset_id, url_path))
+            cursor.execute(
+                "INSERT INTO juice_shop_paths_scan_history (asset_id, url_path, change_type, old_value, new_value) VALUES (%s, %s, 'XSS_CANDIDATE_CHANGE', %s, %s)",
+                (asset_id, url_path, old_xss_candidate, xss_candidate)
+            )
+            
+    # 4. TRACK DOS_CANDIDATE DRIFT
+        if dos_candidate != old_dos_candidate:
+            print(f"[!] DOS Candidate Change: {subdomain} ({old_dos_candidate} -> {dos_candidate})")
+            cursor.execute("UPDATE juice_shop_paths SET dos_candidate = %s WHERE asset_id = %s and url_path = %s", (dos_candidate, asset_id, url_path))
+            cursor.execute(
+                "INSERT INTO juice_shop_paths_scan_history (asset_id, url_path, change_type, old_value, new_value) VALUES (%s, %s, 'DOS_CANDIDATE_CHANGE', %s, %s)",
+                (asset_id, url_path, old_dos_candidate, dos_candidate)
+            )
+            
+    # 4. TRACK Tested DRIFT
+        if tested != old_tested:
+            print(f"[!] Tested Change: {subdomain} ({old_tested} -> {tested})")
+            cursor.execute("UPDATE juice_shop_paths SET tested = %s WHERE asset_id = %s and url_path = %s", (tested, asset_id, url_path))
+            cursor.execute(
+                "INSERT INTO juice_shop_paths_scan_history (asset_id, url_path, change_type, old_value, new_value) VALUES (%s, %s, 'TESTED_CHANGE', %s, %s)",
+                (asset_id, url_path, old_tested, tested)
+            )
+            
+    # 4. TRACK Vulnerable DRIFT
+        if vulnerable != old_vulnerable:
+            print(f"[!] Vulnerable Change: {subdomain} ({old_vulnerable} -> {vulnerable})")
+            cursor.execute("UPDATE juice_shop_paths SET vulnerable = %s WHERE asset_id = %s and url_path = %s", (vulnerable, asset_id, url_path))
+            cursor.execute(
+                "INSERT INTO juice_shop_paths_scan_history (asset_id, url_path, change_type, old_value, new_value) VALUES (%s, %s, 'VULNERABLE_CHANGE', %s, %s)",
+                (asset_id, url_path, old_vulnerable, vulnerable)
+            )
+            
+    # 4. TRACK Vulnerable_To By DRIFT
+        if vulnerable_to != old_vulnerable_to:
+            print(f"[!] Vulnerable_To Change: {subdomain} ({old_vulnerable_to} -> {vulnerable_to})")
+            cursor.execute("UPDATE juice_shop_paths SET vulnerable_to = %s WHERE asset_id = %s and url_path = %s", (vulnerable_to, asset_id, url_path))
+            cursor.execute(
+                "INSERT INTO juice_shop_paths_scan_history (asset_id, url_path, change_type, old_value, new_value) VALUES (%s, %s, 'VULNERABLE_TO_CHANGE', %s, %s)",
+                (asset_id, url_path, old_vulnerable_to, vulnerable_to)
+            )
+        
+    conn.commit()
+    cursor.close()
+    conn.close()
+    
+def update_asset_from_juice_shop_paths(subdomain):
+    conn = get_connection()
+    if not conn:
+        return
+
+    cursor = conn.cursor()
+
+    # Get asset id
+    cursor.execute(
+        "SELECT id FROM assets WHERE subdomain = %s",
+        (subdomain,)
+    )
+    result = cursor.fetchone()
+
+    if not result:
+        print(f"[!] Asset not found: {subdomain}")
+        cursor.close()
+        conn.close()
+        return
+
+    asset_id = result[0]
+
+    # Get vulnerable_to values from child table
+    cursor.execute("""
+        SELECT vulnerable_to
+        FROM juice_shop_paths
+        WHERE asset_id = %s
+          AND vulnerable = TRUE
+    """, (asset_id,))
+
+    vulnerabilities = []
+
+    for row in cursor.fetchall():
+        compromised_by = row[0]
+        if not compromised_by:
+            continue
+
+        # If stored as JSON string, convert back to Python list
+        reasons = json.loads(compromised_by)
+        for reason in reasons:
+            if reason not in vulnerabilities:
+                vulnerabilities.append(reason)
+
+    # If list has 1 or more items, asset is compromised
+    vulnerable = len(vulnerabilities) > 0
+
+    patched = []
+
+    if "sql_injection" not in vulnerabilities:
+        base_content_length = 30
+        result = run_cmd("shop.redasmsecurity Patched Status Testing", f'curl -s -o /dev/null -w "%{{http_code}},%{{size_download}}\n" "https://secure-shop.redasmsecurity.cloud/rest/products/search?q=apple%27%29%29%20UNION%20SELECT%20id%2Cid%2CfullName%2CcardNum%2CexpMonth%2CexpYear%2C7%2C8%2C9%20FROM%20cards%3B"')
+        http_status, content_length = result.strip().split(",")
+        content_length = int(content_length)
+
+        if http_status == "403" or content_length <= base_content_length:
+            vulnerable = len(vulnerabilities) > 0
+            patched.append("sql_injection")
+
+    cursor.execute("""
+            UPDATE assets
+            SET vulnerable = %s,
+                vulnerable_to = %s,
+                patched = %s
+            WHERE id = %s
+            """, (
+            vulnerable,
+            json.dumps(vulnerabilities),
+            json.dumps(patched),
+            asset_id
+            ))
+
     conn.commit()
     cursor.close()
     conn.close()

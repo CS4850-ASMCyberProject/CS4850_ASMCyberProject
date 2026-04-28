@@ -1,0 +1,2 @@
+api.redasmsecurity.cloud
+shop.redasmsecurity.cloud

@@ -1,11 +1,12 @@
-from terminal_run import run_cmd
 import os
+os.environ["PATH"] += ":/home/adam/go/bin"
+from terminal_run import run_cmd
 import resolver 
 import db_handler  # This is the bridge to your Cloud VM
 
 # CONFIGURATION 
 DOMAIN = "redasmsecurity.cloud"
-WORDLIST = r"/srv/asm_project/subdomains-top1million-5000.txt"
+WORDLIST = r"~/SecLists/Discovery/DNS/subdomains-top1million-5000.txt"
 
 def main():
     print(f"=== RedASM Cloud-Linked Discovery Scanner: {DOMAIN} ===")
@@ -36,7 +37,7 @@ def main():
         targets = [line.strip() for line in f if line.strip()]
 
     print(f"[*] Probing {len(targets)} unique assets for Tech Stacks...")
-    final_assets_data, final_vulnerability_data, final_ffuf_data, confirmed_paths = resolver.resolve_details(targets)
+    final_assets_data, final_vulnerability_data, final_ffuf_data, final_juice_shop_path_data = resolver.resolve_details(targets)
 
     # 6. DATABASE SYNC PHASE (The Cloud Link)
     print(f"\n[*] Syncing {len(final_assets_data)} assets to Oracle Cloud VM...")
@@ -73,13 +74,22 @@ def main():
             path_count += 1
         except Exception as e:
             print(f"    [!] Failed to sync {path['url_path']}: {e}")
-       
+    
+    for entry in final_juice_shop_path_data:
+        try:
+            # Pushing to the VM via db_handler
+            subdomain = "shop.redasmsecurity.cloud"
+            db_handler.delsert_juice_shop_paths(subdomain, entry["url_path"], entry["sql_candidate"], entry["xss_candidate"], entry["dos_candidate"], entry["tested"], entry["vulnerable"], entry["vulnerable_to"])
+            print(f"    [+] Synced: {entry['url_path']}")
+        except Exception as e:
+            print(f"    [!] Failed to sync Juice Shop Paths: {e}")
+
     try:
         # Pushing to the VM via db_handler
         subdomain = "shop.redasmsecurity.cloud"
-        db_handler.delsert_juice_shop_paths(subdomain, confirmed_paths)
+        db_handler.update_asset_from_juice_shop_paths(subdomain)
     except Exception as e:
-        print(f"    [!] Failed to sync Juice Shop Paths: {e}")
+        print(f"    [!] Failed to sync Asset Vulnerability Update: {e}")
 
     print("\n" + "="*70)
     print(f"**[SUCCESS] Scan Complete!**")
@@ -105,7 +115,7 @@ def main():
     print(f"Successfully Synced {path_count} total possible paths to legitimize.")
     print("="*70)
     
-    legit_path_count = len(confirmed_paths)
+    legit_path_count = len(final_juice_shop_path_data)
     print("\n" + "="*70)
     print(f"EXPLOITABLE PATHS")
     print(f"Total Exploitable Paths Found: {legit_path_count}")
