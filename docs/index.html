@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ASM Senior Project</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -12,65 +12,89 @@
 
   <div class="sidebar">
     <h2>ASM Project</h2>
-    <a href="https://github.com/CS4850-ASMCyberProject/CS4850_Red_ASMCyberProject" target="_blank" rel="noopener noreferrer">
-      GitHub
-    </a>
-    <a href="#">Final Video</a>
+    <a href="#documents">Documents</a>
+    <a href="https://github.com/CS4850-ASMCyberProject/CS4850_Red_ASMCyberProject" target="_blank" rel="noopener noreferrer">GitHub</a>
+    <a href="#final-video">Final Video</a>
+
+    <div class="sidebar-logo">
+      <div class="logo-circle">ASM</div>
+      <p>Red ASM Security</p>
+    </div>
   </div>
 
-  <div class="main">
+  <main class="main">
 
-    <h1>RED ASM Security: Attack Surface Management</h1>
-    <p>Project ID: SP-108 | Color: Red | Title: ASM</p>
-    <p>Course: CS4850 | Spring 2026</p>
-
-    <h2>Team</h2>
-    <div class="team">
-      <div class="member">
-        <img src="images/ASMAdam.png">
-        <p>Adam Llado</p>
+    <section class="top-section">
+      <div>
+        <h1>RED ASM Security: Attack Surface Management</h1>
+        <p>Project ID: SP-108 | Color: Red | Title: ASM</p>
+        <p>Course: CS4850 | Spring 2026</p>
       </div>
-      <div class="member">
-        <img src="images/ASMKimani.png">
-        <p>Kimani Gordon</p>
+
+      <div class="overview-box">
+        <h2>Project Overview</h2>
+        <p>
+          Red ASM Security is an Attack Surface Management project focused on
+          discovering assets, scanning for vulnerabilities, monitoring alerts,
+          and supporting automated security response.
+        </p>
       </div>
-      <div class="member">
-        <img src="images/ASMAlec.png">
-        <p>Alec Sundby</p>
+    </section>
+
+    <section>
+      <h2>Team</h2>
+      <div class="team">
+        <div class="member">
+          <img src="images/ASMAdam.png" alt="Adam Llado">
+          <p>Adam Llado</p>
+        </div>
+        <div class="member">
+          <img src="images/ASMKimani.png" alt="Kimani Gordon">
+          <p>Kimani Gordon</p>
+        </div>
+        <div class="member">
+          <img src="images/ASMAlec.png" alt="Alec Sundby">
+          <p>Alec Sundby</p>
+        </div>
+        <div class="member">
+          <img src="images/ASMAustin.png" alt="Austin Abeln">
+          <p>Austin Abeln</p>
+        </div>
       </div>
-      <div class="member">
-        <img src="images/ASMAustin.png">
-        <p>Austin Abeln</p>
+    </section>
+
+    <section class="bottom-grid">
+      <div id="documents">
+        <h2>Documents</h2>
+        <div class="card-grid">
+          <a class="card" href="pdfs/Project_Plan.pdf" target="_blank" rel="noopener noreferrer">Project Plan PDF</a>
+          <a class="card" href="pdfs/SRS.pdf" target="_blank" rel="noopener noreferrer">SRS PDF</a>
+          <a class="card" href="pdfs/SDD.pdf" target="_blank" rel="noopener noreferrer">SDD PDF</a>
+          <a class="card" href="pdfs/Development_Document.pdf" target="_blank" rel="noopener noreferrer">DD PDF</a>
+          <a class="card" href="pdfs/STP_STR.pdf" target="_blank" rel="noopener noreferrer">STP & STR PDF</a>
+        </div>
       </div>
-    </div>
 
-    <h2>Documents</h2>
-    <div class="card"><a href="pdfs/Project_Plan.pdf" target="_blank" rel="noopener noreferrer">
-      Project Plan PDF</a>
-    </div>
-    <div class="card"><a href="pdfs/SRS.pdf" target="_blank" rel="noopener noreferrer">
-      SRS PDF</a>
-    </div>
-    <div class="card"><a href="pdfs/SDD.pdf" target="_blank" rel="noopener noreferrer">
-      SDD PDF</a>
-    </div>
-    <div class="card"><a href="pdfs/Development_Document.pdf" target="_blank" rel="noopener noreferrer">
-      DD PDF</a>
-    </div>
-    <div class="card"><a href="pdfs/STP_STR.pdf" target="_blank" rel="noopener noreferrer">
-      STP & STR PDF</a>
-    </div>
+      <div>
+        <h2>Project Links</h2>
+        <div class="card-grid single">
+          <a class="card" href="https://github.com/CS4850-ASMCyberProject/CS4850_Red_ASMCyberProject" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+          <a id="final-video" class="card" href="#" target="_blank" rel="noopener noreferrer">Final Video</a>
+        </div>
 
-    <h2>GitHub</h2>
-    <div class="card"><a href="https://github.com/CS4850-ASMCyberProject/CS4850_Red_ASMCyberProject" target="_blank" rel="noopener noreferrer">
-      Repository</a>
-    </div>
+        <h2>Tools Used</h2>
+          <div class="tools">
+            <a href="https://wazuh.com/" target="_blank">Wazuh</a>
+            <a href="https://projectdiscovery.io/nuclei" target="_blank">Nuclei</a>
+            <a href="https://shuffler.io/" target="_blank">Shuffle</a>
+            <a href="https://strangebee.com/thehive/" target="_blank">TheHive</a>
+            <a href="https://modsecurity.org/" target="_blank">ModSecurity</a>
+            <a href="https://slack.com/" target="_blank">Slack</a>
+        </div>
+      </div>
+    </section>
 
-    <h2>Final Video</h2>
-    <div class="card"><a href="#" target="_blank" rel="noopener noreferrer">
-      Final Video</a>
-    </div>
-
-  </div>
+  </main>
 
 </body>
+</html>
