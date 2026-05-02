@@ -1,0 +1,4 @@
+shop.redasmsecurity.cloud
+grafana.redasmsecurity.cloud
+wazuh.redasmsecurity.cloud
+www.redasmsecurity.cloud
