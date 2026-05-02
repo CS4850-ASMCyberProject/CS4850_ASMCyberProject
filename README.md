@@ -146,8 +146,24 @@ https://github.com/CS4850-ASMCyberProject/RedASMSecurity_Cyber_Capstone_Project/
 
 ```bash
 ASM_Manager/
+├── ASM_Scanning_Engine/
+├── Grafana/
+├── MySQL_Database/
+├── SOC_Suite/
+│   ├── Shuffle/
+│   ├── TheHive/
+│   └── Wazuh_Manager/
+
 ASM_Target/
+├── Dockerized_Juice_Shop_Services/
+├── Modsecurity/
+├── Nginx_Server/
+├── Wazuh_Agent/
+
 Supporting_Services/
+├── Cloudflare/
+├── Slack/
+
 Website/
 ```
 
