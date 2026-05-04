@@ -5,6 +5,11 @@
 
 ---
 
+## 🎥 Final Project Video
+
+🔗  YouTube Link:
+https://www.youtube.com/watch?v=OaFekFG9pOg
+
 ## 🎯 Project Focus
 
 This project demonstrates a full **Attack Surface Management (ASM)** pipeline integrating both offensive (Red Team) and defensive (Blue Team) strategies.
