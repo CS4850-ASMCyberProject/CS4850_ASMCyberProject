@@ -135,7 +135,7 @@ Feeds data into database and SOC pipeline
 By: Austin Abeln
 
 🔗 Website Link:
-https://cs4850-asmcyberproject.github.io/RedASMSecurity_Cyber_Capstone_Project/
+https://red-asm-security.github.io/RedASMSecurity_Cyber_Capstone_Project/
 
 A web-based dashboard provides visualization and interaction with ASM data, connecting backend systems to a user-friendly interface.
 
